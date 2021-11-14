@@ -11,13 +11,6 @@ import (
 // 0x00444f4c is the special value that each lod archive starts with
 const lodArchiveHeader int32 = 0x00444f4c
 
-type LodArchiveType int32
-const (
-	BaseArchive      LodArchiveType = 0x01
-	ExpansionArchive LodArchiveType = 0x02
-	Unknown          LodArchiveType = 0xff
-)
-
 type LodArchive struct {
 	lodType       LodArchiveType
 	numberOfFiles int32
