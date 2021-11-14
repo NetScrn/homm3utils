@@ -1,4 +1,4 @@
-package lodparser
+package lodparse
 
 type LodArchiveType int32
 const (
