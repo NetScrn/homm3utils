@@ -40,6 +40,13 @@ func ParseLodFile(lodFile string) (*LodArchive, error) {
 		return nil, fmt.Errorf("can't open lod archive(%s): %w", lodFile, err)
 	}
 
+	defer func() {
+		err = lodFileReader.Close()
+		if err != nil {
+			fmt.Printf("can't close lod archive(%s)\n", lodFile)
+		}
+	}()
+
 	var lodHeader int32
 	err = readInt32(lodFileReader, &lodHeader)
 	if err != nil {
@@ -73,11 +80,6 @@ func ParseLodFile(lodFile string) (*LodArchive, error) {
 	lodArchive.files, err = readLodFiles(lodFileReader, int(lodArchive.numberOfFiles))
 	if err != nil {
 		return nil, fmt.Errorf("can't read files of lod archive(%s): %w", lodFile, err)
-	}
-
-	err = lodFileReader.Close()
-	if err != nil {
-		return nil, fmt.Errorf("can't close lod archive(%s): %w", lodFile, err)
 	}
 
 	return &lodArchive, nil
