@@ -64,11 +64,11 @@ func ExtractLodFiles(lodArchiveRef *lodparse.LodArchive, dstDir string) error {
 
 func ExtractFile(file lodparse.LodFile, dstDir string, lodFileReader *os.File) error {
 	fmt.Printf("Processing: %s\n", file.Name)
-	var fileSize int32
+	var fsize int32
 	if file.IsCompressed() {
-		fileSize = file.CompressedSize
+		fsize = file.CompressedSize
 	} else {
-		fileSize = file.OriginalSize
+		fsize = file.OriginalSize
 	}
 
 	_, err := lodFileReader.Seek(int64(file.Offset), io.SeekStart)
@@ -76,43 +76,33 @@ func ExtractFile(file lodparse.LodFile, dstDir string, lodFileReader *os.File) e
 		return fmt.Errorf("can't seek on lod archive: %w", err)
 	}
 
-	fileBuf := make([]byte, fileSize)
-	_, err = lodFileReader.Read(fileBuf)
+	fb := make([]byte, fsize)
+	_, err = lodFileReader.Read(fb)
 	if err != nil {
 		return fmt.Errorf("can't read lod archive: %w", err)
 	}
+	var fbr io.Reader = bytes.NewReader(fb)
 
 	if file.IsCompressed() {
-		err = writeCompressedFile(fileBuf, file, dstDir)
-	} else {
-		err = writeFile(fileBuf, file, dstDir)
+		fbr, err = zlib.NewReader(fbr)
+		if err != nil {
+			return fmt.Errorf("can't create zlib reader during decompressng lod file(%s): %w", file.Name, err)
+		}
+		defer fbr.(io.Closer).Close()
 	}
-	return err
+
+	return writeFile(fbr, file, dstDir)
 }
 
-func writeCompressedFile(data []byte, fileMeta lodparse.LodFile, dstDir string) error {
-	br := bytes.NewReader(data)
-	zr, err := zlib.NewReader(br)
-	if err != nil {
-		return fmt.Errorf("can't write compressed lod file: %w", err)
-	}
-	defer zr.Close()
+func writeFile(bufReader io.Reader, fileMeta lodparse.LodFile, dstDir string) error {
 	file, err := os.Create(filepath.Join(dstDir, fileMeta.Name))
 	if err != nil {
-		return fmt.Errorf("can't write compressed lod file: %w", err)
+		return fmt.Errorf("can't create lod file: %w", err)
 	}
 	defer file.Close()
-	_, err = io.Copy(file, zr)
+	_, err = io.Copy(file, bufReader)
 	if err != nil {
-		return fmt.Errorf("can't write compressed lod file: %w", err)
-	}
-	return nil
-}
-
-func writeFile(data []byte, fileMeta lodparse.LodFile, dstDir string) error {
-	err := os.WriteFile(filepath.Join(dstDir, fileMeta.Name), data,0644)
-	if err != nil {
-		return fmt.Errorf("can't write raw lod file: %w", err)
+		return fmt.Errorf("can't write lod file: %w", err)
 	}
 	return nil
 }
