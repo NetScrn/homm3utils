@@ -15,9 +15,7 @@ import (
 
 const defaultConcurrencyLevel = 4
 
-func ExtractLodFiles(lodArchiveRef *lodparse.LodArchive, dstDir string) error {
-	lodArchive := *lodArchiveRef
-
+func ExtractLodFiles(lodArchive *lodparse.LodArchive, dstDir string) error {
 	var concurrencyLevel = defaultConcurrencyLevel
 	if len(os.Args) > 3 {
 		i, err := strconv.Atoi(os.Args[3])
