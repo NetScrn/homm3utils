@@ -8,22 +8,13 @@ const (
 )
 
 func (lat LodArchiveType) IsBaseType() bool {
-	if lat == Base {
-		return true
-	}
-	return false
+	return lat == Base
 }
 
 func (lat LodArchiveType) IsExpansionType() bool {
-	if lat == Expansion {
-		return true
-	}
-	return false
+	return lat == Expansion
 }
 
 func (lat LodArchiveType) IsUnknownType() bool {
-	if lat == Unknown {
-		return true
-	}
-	return false
+	return lat == Unknown
 }
