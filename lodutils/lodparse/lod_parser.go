@@ -81,32 +81,32 @@ func readInt32(r io.Reader, o *int32) error {
 	return binary.Read(r, binary.LittleEndian, o)
 }
 
-func readLodFiles(r *os.File, numberOfFiles int32) ([]LodFile, error) {
+func readLodFiles(laf *os.File, numberOfFiles int32) ([]LodFile, error) {
 	lodFiles := make([]LodFile, 0, numberOfFiles)
 
 	var fi int32
 	for fi = 0; fi < numberOfFiles; fi++ {
 		lodFile := LodFile{}
 
-		name, err := readLodArchiveFileName(r)
+		name, err := readLodArchiveFileName(laf)
 		if err != nil {
 			return nil, fmt.Errorf("error reading offset of [%d]: %w", fi, err)
 		}
 		lodFile.Name = name
 
-		err = readInt32(r, &lodFile.Offset)
+		err = readInt32(laf, &lodFile.Offset)
 		if err != nil {
 			return nil, fmt.Errorf("error reading offset of [%d, %s]: %w", fi, name, err)
 		}
-		err = readInt32(r, &lodFile.OriginalSize)
+		err = readInt32(laf, &lodFile.OriginalSize)
 		if err != nil {
 			return nil, fmt.Errorf("error reading originalSize of [%d, %s]: %w", fi, name, err)
 		}
-		_, err = r.Seek(4, io.SeekCurrent)
+		_, err = laf.Seek(4, io.SeekCurrent)
 		if err != nil {
 			return nil, fmt.Errorf("can't seek unknown lod data part of [%d, %s]: %w", fi, name, err)
 		}
-		err = readInt32(r, &lodFile.CompressedSize)
+		err = readInt32(laf, &lodFile.CompressedSize)
 		if err != nil {
 			return nil, fmt.Errorf("error reading compressedSize of [%d, %s]: %w", fi, name, err)
 		}
