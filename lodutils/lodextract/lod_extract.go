@@ -5,6 +5,7 @@ import (
 	"compress/zlib"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -79,14 +80,14 @@ func ExtractFile(file lodparse.LodFile, dstDir string, lodFileReader *os.File) e
 	if err != nil {
 		return fmt.Errorf("can't read lod archive: %w", err)
 	}
-	var fbr io.Reader = bytes.NewReader(fb)
+	var fbr = ioutil.NopCloser(bytes.NewReader(fb))
+	defer fbr.Close()
 
 	if file.IsCompressed() {
 		fbr, err = zlib.NewReader(fbr)
 		if err != nil {
 			return fmt.Errorf("can't create zlib reader during decompressng lod file(%s): %w", file.Name, err)
 		}
-		defer fbr.(io.Closer).Close()
 	}
 
 	return writeFile(fbr, file, dstDir)
