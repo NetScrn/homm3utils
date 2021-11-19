@@ -11,26 +11,9 @@ import (
 // 0x00444f4c is the special value that each lod archive starts with
 const lodArchiveHeader int32 = 0x00444f4c
 
-type LodArchive struct {
-	FilePath      string
-	LodType       LodArchiveType
-	NumberOfFiles int32
-	Files         []LodFile
-}
-
-type LodFile struct {
-	Name           string
-	Offset         int32
-	OriginalSize   int32
-	CompressedSize int32
-}
-func (lf LodFile) IsCompressed() bool {
-	return lf.CompressedSize != 0
-}
-
-func ParseLodFile(pathToLod string) (*LodArchive, error) {
-	lodArchive := LodArchive{
-		FilePath: pathToLod,
+func parseLodFile(pathToLod string) (*LodArchiveMeta, error) {
+	lodArchiveMeta := LodArchiveMeta{
+		ArchiveFilePath: pathToLod,
 	}
 
 	lodFileReader, err := os.Open(pathToLod)
@@ -54,13 +37,13 @@ func ParseLodFile(pathToLod string) (*LodArchive, error) {
 	if err != nil {
 		return nil, fmt.Errorf("can't read type of lod archive(%s): %w", pathToLod, err)
 	}
-	lodArchive.LodType = LodArchiveType(lodType)
+	lodArchiveMeta.LodType = LodArchiveType(lodType)
 
-	err = readInt32(lodFileReader, &lodArchive.NumberOfFiles)
+	err = readInt32(lodFileReader, &lodArchiveMeta.NumberOfFiles)
 	if err != nil {
 		return nil, fmt.Errorf("can't read numberOfFiles of lod archive(%s): %w", pathToLod, err)
 	}
-	if lodArchive.NumberOfFiles == 0 {
+	if lodArchiveMeta.NumberOfFiles == 0 {
 		return nil, errors.New("lod archive is empty")
 	}
 
@@ -69,12 +52,12 @@ func ParseLodFile(pathToLod string) (*LodArchive, error) {
 		return nil, fmt.Errorf("can't seek on lod archive(%s): %w", pathToLod, err)
 	}
 
-	lodArchive.Files, err = readLodFiles(lodFileReader, lodArchive.NumberOfFiles)
+	lodArchiveMeta.Files, err = readLodFiles(lodFileReader, lodArchiveMeta.NumberOfFiles)
 	if err != nil {
 		return nil, fmt.Errorf("can't read files of lod archive(%s): %w", pathToLod, err)
 	}
 
-	return &lodArchive, nil
+	return &lodArchiveMeta, nil
 }
 
 func readInt32(r io.Reader, o *int32) error {

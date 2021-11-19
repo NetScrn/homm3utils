@@ -6,19 +6,18 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/netscrn/homm3utils/lodutils/lodextract"
 	"github.com/netscrn/homm3utils/lodutils/lodparse"
 )
 
 func main() {
 	pathToLod, dstDir := validateAndGetArgs()
 
-	lodArchive, err := lodparse.ParseLodFile(pathToLod)
+	lodArchiveMeta, err := lodparse.LoadLodArchiveMetaFromLodFile(pathToLod)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	err = lodextract.ExtractLodFiles(lodArchive, dstDir)
+	err = lodparse.ExtractLodFiles(lodArchiveMeta, dstDir)
 	if err != nil {
 		panic(err.Error())
 	}

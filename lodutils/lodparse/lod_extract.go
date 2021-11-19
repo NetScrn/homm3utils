@@ -1,4 +1,4 @@
-package lodextract
+package lodparse
 
 import (
 	"bytes"
@@ -10,13 +10,11 @@ import (
 	"path/filepath"
 	"strconv"
 	"sync"
-
-	"github.com/netscrn/homm3utils/lodutils/lodparse"
 )
 
 const defaultConcurrencyLevel = 4
 
-func ExtractLodFiles(lodArchive *lodparse.LodArchive, dstDir string) error {
+func ExtractLodFiles(lodArchive *LodArchiveMeta, dstDir string) error {
 	var concurrencyLevel = defaultConcurrencyLevel
 	if len(os.Args) > 3 {
 		i, err := strconv.Atoi(os.Args[3])
@@ -41,16 +39,16 @@ func ExtractLodFiles(lodArchive *lodparse.LodArchive, dstDir string) error {
 		}
 
 		go func() {
-			lodFileReader, err := os.Open(lodArchive.FilePath)
+			lodFileReader, err := os.Open(lodArchive.ArchiveFilePath)
 			if err != nil {
-				panic(fmt.Errorf("can't open lod archive(%s): %w", lodArchive.FilePath, err))
+				panic(fmt.Errorf("can't open lod archive(%s): %w", lodArchive.ArchiveFilePath, err))
 			}
 			defer lodFileReader.Close()
 
 			for _, file := range lodArchive.Files[start:end] {
-				err = ExtractFile(file, dstDir, lodFileReader)
+				err = ExtractFile(file, lodFileReader, dstDir)
 				if err != nil {
-					panic(fmt.Errorf("can't extract lod archive(%s) file(%s): %w", lodArchive.FilePath, file.Name, err))
+					panic(fmt.Errorf("can't extract lod archive(%s) file(%s): %w", lodArchive.ArchiveFilePath, file.Name, err))
 				}
 			}
 			wg.Done()
@@ -61,7 +59,7 @@ func ExtractLodFiles(lodArchive *lodparse.LodArchive, dstDir string) error {
 	return nil
 }
 
-func ExtractFile(file lodparse.LodFile, dstDir string, lodFileReader *os.File) error {
+func ExtractFile(file LodFile, lodFileReader *os.File, dstDir string) error {
 	fmt.Printf("Processing: %s\n", file.Name)
 	var fsize int32
 	if file.IsCompressed() {
@@ -90,10 +88,10 @@ func ExtractFile(file lodparse.LodFile, dstDir string, lodFileReader *os.File) e
 		}
 	}
 
-	return writeFile(fbr, file, dstDir)
+	return writeFile(file, fbr, dstDir)
 }
 
-func writeFile(bufReader io.Reader, fileMeta lodparse.LodFile, dstDir string) error {
+func writeFile(fileMeta LodFile, bufReader io.Reader, dstDir string) error {
 	file, err := os.Create(filepath.Join(dstDir, fileMeta.Name))
 	if err != nil {
 		return fmt.Errorf("can't create lod file: %w", err)
