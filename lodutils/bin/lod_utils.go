@@ -5,19 +5,20 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/netscrn/homm3utils/lodutils/lodparse"
 )
 
 func main() {
-	pathToLod, dstDir := validateAndGetArgs()
+	pathToLod, dstDir, concurrencyLevel := validateAndGetArgs()
 
 	lodArchiveMeta, err := lodparse.LoadLodArchiveMetaFromLodFile(pathToLod)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	err = lodparse.ExtractLodFiles(lodArchiveMeta, dstDir)
+	err = lodparse.ExtractLodFiles(lodArchiveMeta, dstDir, concurrencyLevel)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -25,7 +26,7 @@ func main() {
 	fmt.Print("Done")
 }
 
-func validateAndGetArgs() (pathToLod string, dstDir string) {
+func validateAndGetArgs() (pathToLod string, dstDir string, concurrencyLevel int) {
 	if len(os.Args) < 3 {
 		panic("\n Wrong arguments count \nfirst argument should be path to .lod file. \nsecond argument should be a path to output dir")
 	}
@@ -54,5 +55,12 @@ func validateAndGetArgs() (pathToLod string, dstDir string) {
 		panic(dstDir + ": is not directory")
 	}
 
-	return pathToLod, dstDir
+	if len(os.Args) == 4 {
+		concurrencyLevel, err = strconv.Atoi(os.Args[3])
+		if err != nil {
+			panic("invalid third argument, should be int")
+		}
+	}
+
+	return pathToLod, dstDir, concurrencyLevel
 }

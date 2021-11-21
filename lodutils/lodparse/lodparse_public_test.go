@@ -110,7 +110,7 @@ func TestExtractLodFiles(t *testing.T) {
 		t.Fatalf("Can't load lod archive meta: %s", err.Error())
 	}
 	wholeTestingArchiveDir := filepath.Join(tempDirPath, "whole_archive")
-	err = lodparse.ExtractLodFiles(lam, wholeTestingArchiveDir)
+	err = lodparse.ExtractLodFiles(lam, wholeTestingArchiveDir, 0)
 	if err != nil {
 		t.Fatalf("Can't extract lod archive: %s", err.Error())
 	}

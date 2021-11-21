@@ -3,27 +3,26 @@ package lodparse
 import (
 	"bytes"
 	"compress/zlib"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strconv"
 	"sync"
 )
 
 const defaultConcurrencyLevel = 4
 
-func ExtractLodFiles(lodArchive *LodArchiveMeta, dstDir string) error {
-	var concurrencyLevel = defaultConcurrencyLevel
-	if len(os.Args) > 3 {
-		i, err := strconv.Atoi(os.Args[3])
-		if err == nil {
-			concurrencyLevel = i
-		}
+func ExtractLodFiles(lodArchive *LodArchiveMeta, dstDir string, concurrencyLevel int) error {
+	if concurrencyLevel == 0 {
+		concurrencyLevel = defaultConcurrencyLevel
 	}
 	if concurrencyLevel > int(lodArchive.NumberOfFiles) {
 		concurrencyLevel = int(lodArchive.NumberOfFiles)
+		if concurrencyLevel == 0 {
+			return errors.New("zero concurrency level in ExtractLodFiles due to empty lod archive")
+		}
 	}
 
 	var wg sync.WaitGroup
