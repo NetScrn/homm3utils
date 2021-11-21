@@ -39,6 +39,7 @@ func ExtractLodFiles(lodArchive *LodArchiveMeta, dstDir string) error {
 		}
 
 		go func() {
+			defer wg.Done()
 			lodFileReader, err := os.Open(lodArchive.ArchiveFilePath)
 			if err != nil {
 				panic(fmt.Errorf("can't open lod archive(%s): %w", lodArchive.ArchiveFilePath, err))
@@ -51,7 +52,6 @@ func ExtractLodFiles(lodArchive *LodArchiveMeta, dstDir string) error {
 					panic(fmt.Errorf("can't extract lod archive(%s) file(%s): %w", lodArchive.ArchiveFilePath, file.Name, err))
 				}
 			}
-			wg.Done()
 		}()
 	}
 	wg.Wait()
