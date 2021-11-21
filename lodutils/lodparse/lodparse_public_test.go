@@ -107,12 +107,12 @@ func TestExtractFile(t *testing.T) {
 func TestExtractLodFiles(t *testing.T) {
 	lam, err := lodparse.LoadLodArchiveMetaFromLodFile(filepath.Join(".", "testdata", "HotA_lng.lod"))
 	if err != nil {
-		t.Fatalf("Can't load lod archive meta: %s", err.Error())
+		t.Fatalf("Can't load lod archive meta: %v", err)
 	}
 	wholeTestingArchiveDir := filepath.Join(tempDirPath, "whole_archive")
 	err = lodparse.ExtractLodFiles(lam, wholeTestingArchiveDir, 0)
 	if err != nil {
-		t.Fatalf("Can't extract lod archive: %s", err.Error())
+		t.Fatalf("Can't extract lod archive: %v", err)
 	}
 
 	testingFiles, err := ioutil.ReadDir(wholeTestingArchiveDir)
