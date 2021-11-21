@@ -59,7 +59,7 @@ func ExtractLodFiles(lodArchive *LodArchiveMeta, dstDir string) error {
 	return nil
 }
 
-func ExtractFile(file LodFile, lodFileReader *os.File, dstDir string) error {
+func ExtractFile(file LodFileMeta, lodFileReader *os.File, dstDir string) error {
 	fmt.Printf("Processing: %s\n", file.Name)
 	var fsize int32
 	if file.IsCompressed() {
@@ -91,7 +91,7 @@ func ExtractFile(file LodFile, lodFileReader *os.File, dstDir string) error {
 	return writeFile(file, fbr, dstDir)
 }
 
-func writeFile(fileMeta LodFile, bufReader io.Reader, dstDir string) error {
+func writeFile(fileMeta LodFileMeta, bufReader io.Reader, dstDir string) error {
 	file, err := os.Create(filepath.Join(dstDir, fileMeta.Name))
 	if err != nil {
 		return fmt.Errorf("can't create lod file: %w", err)

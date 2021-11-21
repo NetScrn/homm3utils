@@ -56,6 +56,7 @@ func parseLodFile(pathToLod string) (*LodArchiveMeta, error) {
 	if err != nil {
 		return nil, fmt.Errorf("can't read files of lod archive(%s): %w", pathToLod, err)
 	}
+	lodArchiveMeta.indexFiles()
 
 	return &lodArchiveMeta, nil
 }
@@ -64,12 +65,12 @@ func readInt32(r io.Reader, o *int32) error {
 	return binary.Read(r, binary.LittleEndian, o)
 }
 
-func readLodFiles(laf *os.File, numberOfFiles int32) ([]LodFile, error) {
-	lodFiles := make([]LodFile, 0, numberOfFiles)
+func readLodFiles(laf *os.File, numberOfFiles int32) ([]LodFileMeta, error) {
+	lodFiles := make([]LodFileMeta, 0, numberOfFiles)
 
 	var fi int32
 	for fi = 0; fi < numberOfFiles; fi++ {
-		lodFile := LodFile{}
+		lodFile := LodFileMeta{}
 
 		name, err := readLodArchiveFileName(laf)
 		if err != nil {

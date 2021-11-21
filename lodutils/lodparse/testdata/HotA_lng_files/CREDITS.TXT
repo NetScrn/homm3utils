@@ -1,0 +1,462 @@
+Credits
+"{Команда HotA:}
+{(в алфавитном} {порядке)}
+
+{Agar} 
+3D-художник, концепт-арт
+{Alex-ander}
+3D-художник, художник,
+концепция проекта
+{baratorch}
+программист,
+редактор карт, лобби,
+одновременные ходы,
+совместимость с HD-mod
+{Дмитрий Гравченко}
+3D-художник
+{Docent Picolan}
+автор идеи и координатор
+проекта, главный художник,
+связи с общественностью,
+музыка и звуки
+{Don_ko} aka {Лентяй}
+3D-художник, художник,
+карты
+{DrSlash}
+3D, художник,
+модерация лобби
+{Fatalist}
+карты, карты Кампаний,
+переводы, редактура
+{fiorin}
+3D-художник
+{gotthit}
+программист
+{Gruk}
+программист,
+редактор шаблонов
+{Игорь Кудра}
+главный тестер
+{Klejnot Nilu}
+модерация лобби
+{Mantiss}
+тестинг, тексты,
+связи с общественностью
+{nik312}
+баланс, переводы, тестинг,
+связи с общественностью
+{nosferatu}
+2D-художник
+{parovozovoz}
+карты, тестинг,
+модерация лобби
+{Qed'Maen}
+документация, переводы
+{Sav}
+сокоординатор,
+главный программист,
+документация, баланс,
+связи с общественностью
+{Tevye}
+главный редактор, переводы
+{Vade Parvis}
+художник, идеи,
+связи с общественностью
+
+{Неактивные} {участники:} 
+
+{Axolotl}
+3D-художник
+{FCst1}
+тестинг
+{hippocamus}
+почётный участник, тестинг,
+модерация лобби
+{Серёга-JET}
+редактура, тестинг
+{Spartak}
+тестинг, идеи
+{Yulyasha}
+организация информации,
+модерация лобби
+
+{Благодарим:}
+
+{Форум DF2}
+и его Администрацию 
+{LivingAnarchy}
+за ведение группы в Facebook,
+организацию турниров
+и тестирования
+{Erolast}
+разработка сайта
+{WiZarDX_576} и {igrik}
+за помощь с кодом
+{SaintDark}
+за помощь с ланчером
+{Sar} и {d0s}
+за помощь в концепции Причала
+{sergroj}
+за программное обеспечение
+и помощь с редактором карт
+{AKuHAK}
+за редактуру текстов
+{Денис Гончарук}
+за хостинг
+{olexn}
+за помощь с установщиком
+{Станислав Гординский}
+за переводы
+{IQUARE}
+за помощь с доработкой
+одиночных карт и Кампании
+{Nestor}
+за тестирование
+и доработку Кампании
+{Orzie}
+за помощь со звуками
+
+Создателей карт и шаблонов:
+{Ивана Воронцова}, {Riug74},
+{Чапая}, {Manolo}, {molski},
+{koget}, {Veracruz}, {Begrezen},
+{Wic}, {Ignus}
+
+Тестеров:
+{Machberet}, {Ignus},
+{maestro}, {Ravciozo},
+{Chleb}, {Szopa666}
+
+и всё сообщество
+поклонников Heroes за
+активность и посильную помощь
+
+{Бывшие} {участники:}
+
+{Миханик}
+программист
+{Д'якон}
+программист
+{pokrik1}
+художник
+{Silver}
+сюжет
+{VSeleznv}
+программист
+{you}
+программист
+{gamdev}
+тестинг
+{<Fenix>}
+карты
+{VizitOr}
+программист
+{SAG}
+баланс
+{feanor}
+программист
+{Zenofex}
+тестинг, редактура
+{exx}
+3D-художник
+{Black Phantom}
+игровые ресурсы
+{Entuser}
+программист,
+HotA-утилиты
+{Astaroth}
+художник
+{Vaflya}
+баланс, тестинг
+{Hapuga}
+переводчик,
+редактура
+{Wic}
+баланс, тестинг,
+шаблоны случайных карт
+{Mugais}
+сюжет Кампаний, карты,
+тексты
+{potmdehex}
+программист
+{deferatto}
+3D-художник, художник,
+карты, тестинг
+{Quick-Sighted Dog}
+3D-художник
+{Arseny}
+баланс, карты
+{ArtisanDen}
+художник
+{borisloff}
+3D-художник
+{Darkmoon}
+переводы
+{Kastore}
+связи с общественностью,
+Кампания
+{Maestro}
+видеоролики
+{major}
+программист
+{Morn}
+портреты героев
+{Rusha}
+3D-художник
+{Starseeker}
+редактура, переводы
+{XEL}
+история сеттинга, сюжет
+
+
+
+
+{Разработчики оригинала:}
+
+{Создатель:}
+Jon Van Caneghem
+
+
+
+{Исполнительный продюсер:}
+Mark Caldwell
+
+
+
+{Продюсер:}
+Jeff Blattner
+
+
+
+{Директор:}
+David Mullich
+
+
+{Первый зам. Директора:}
+Christian Vanover
+
+
+{Дизайнеры:}
+Jennifer Bullard
+Gregory Fulton
+Jon Van Caneghem
+
+
+{Ведущие программисты:}
+John Bolton
+David Richey
+
+
+{Программисты:}
+Mark Caldwell
+John Krause
+Jeff Leggett
+George Ruof
+Gus Smedstad
+
+
+{Ведущие художники:}
+Joseph McGuffin
+Phelan Sykes
+
+
+{Художники:}
+George Almond
+Jeff Bigman
+Fernando Castillo
+Rebecca Christel
+Brian DeMetz
+John E. Gibson IV
+Louis Henderson
+Edward Hudson
+Tracy Iwata
+Steve Jasper
+Brian Kemper
+April Lee
+Bonita Long-Hemsath
+Adam McCarthy
+Kurt McKeever
+Nowa Morisaku
+Kenneth Thomson, Jr.
+Tony Rizo
+Bill Stoneham
+Julia Ulano
+Steve Wasaff
+Scott White
+Charles Zilm
+
+
+{Заведующий хозяйством:}
+Jack Russell
+
+
+{Создатели карт:}
+Benjamin Bent
+Dave Botan
+Ryan Den
+Walter Johnson
+Marcus Pregent
+Christian Vanover
+Lisa Whitman
+Mike Wolf
+
+
+{Продюсер музыки:}
+Rob King
+
+
+{Городские темы:}
+Paul Romero
+
+
+{Музыка:}
+Paul Romero
+Rob King
+Steve Baca
+
+
+{Звук:}
+Rob King
+Steve Baca
+Chuck Russom
+
+
+{Голоса:}
+Rob King
+Green Street Studios
+South Pasadena, Ca.
+
+
+{Актёры:}
+Catherine Battistone
+Aric Devone
+Mari Devon
+Richard Epcar
+Danny Fehsenfeld
+Lex Lang
+Wendee Lee
+Laird Macintosh
+Sy Prescott
+Mike Sorich
+Dan Woren
+
+
+{Ведущий тестер:}
+Karl Drown
+
+
+{Тестеры:}
+Jesse Anacleto
+Mary Ellen Babson
+Devin Chapman
+William Choulos
+John Cloud
+Gavan Cook
+Karl Fischer
+Ernie Gallardo
+Benjamin Goldhammer
+Rich Holmes
+Yoshiyuki Maeda
+Lance Page
+Bryce Verdier
+Eric Williamson
+Sean Wyman
+Thomas Zeliff
+
+
+{Особое спасибо:}
+Cyberlore Studios
+Hypnotix
+Equinoxe
+Rad Game Tools
+Sonic Foundry
+Sound Forge
+Soundscape
+Riki Corredera
+John Machin
+Scott McDaniel
+Michele Mitchel
+John Slowsky
+
+
+{Веб-мастер:}
+Joshua “Guthwulf” Milligan
+
+
+{Веб-художник:}
+Aaron Castro
+
+
+{Веб-программист:}
+Robert Belknap
+Peter Hillier
+
+
+{Заходите к нам:}
+www.3do.com
+
+
+
+{РОССИЙСКАЯ СТОРОНА}
+
+{Директор :}
+
+Игорь Устинов (Бука)
+
+Виталий Шутов (MiST land)
+
+{Лицензирование: }
+Владимир Миняев (Бука)
+
+
+{Продюсер проекта: } 
+Виталий Шутов (MiST land)
+
+
+{Программисты: }
+Александр Гаранин (MiST land)
+Александр Сорокин (MiST land)
+
+
+{Художник}
+Маргарита Гурьева (MiST land)
+
+
+{Переводчики: }
+Александр Климов (MiST land)
+Сергей Осипов (MiST land)
+
+
+{Редактор:}
+Виталий Шутов (MiST land)
+
+
+{Звук: }
+Студия “Крыша”
+
+
+{Отдельные благодарности}
+
+От компании MiST land:
+Игорю Устинову
+Александру Михайлову
+Владимиру Меняеву
+Антону Сосенко
+Андрею Фомину
+""Temach""
+""MadKoT""
+Славе Алпатову
+а также всем бета-тестерам
+
+От компании Бука:
+Татьяна Устинова
+Марина Белобородова
+ИММА – ПРЕСС 
+
+
+{Милости просим к нам на: }
+www.buka.com
+(Сайт компании Бука)
+
+"
+Copyright 1999, The 3DO Company. All Rights Reserved. Heroes of Might and Magic, New World Computing, 3DO, and their respective logos are trademarks, and/or service marks of The 3DO Company in the U.S. and other Countries. All other trademarks belong to their respective owners. New World Computing is a division of The 3DO Company. Все права на распространение на территории России и Украины принадлежат компании Бука. Защита авторских осуществляется компанией "Русский Щит".
