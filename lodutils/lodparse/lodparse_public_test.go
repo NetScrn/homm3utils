@@ -17,7 +17,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic("can't create temp dir for tests")
 	}
-	err = os.Mkdir(filepath.Join(tdp, "whole_archive"), 0777)
+	err = os.Mkdir(filepath.Join(tdp, "whole_archive"), 0700)
 	if err != nil {
 		panic("can't create temp dir for whole archive tests")
 	}
