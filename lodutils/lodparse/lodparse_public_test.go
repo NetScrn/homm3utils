@@ -1,6 +1,7 @@
 package lodparse_test
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -16,9 +17,13 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic("can't create temp dir for tests")
 	}
+	err = os.Mkdir(filepath.Join(tdp, "whole_archive"), 0777)
+	if err != nil {
+		panic("can't create temp dir for whole archive tests")
+	}
 	tempDirPath = tdp
 	m.Run()
-	err = os.RemoveAll(tempDirPath)
+	os.RemoveAll(tempDirPath)
 }
 
 func TestLoadLodArchiveMetaFromLodFile(t *testing.T) {
@@ -96,5 +101,39 @@ func TestExtractFile(t *testing.T) {
 	testingExtractedNotCompressedFile, err := os.ReadFile(filepath.Join(tempDirPath, "AVArnd1.msk"))
 	if !reflect.DeepEqual(originalExtractedNotCompressedFile, testingExtractedNotCompressedFile) {
 		t.Error("invalid extracted not compressed file")
+	}
+}
+
+func TestExtractLodFiles(t *testing.T) {
+	lam, err := lodparse.LoadLodArchiveMetaFromLodFile(filepath.Join(".", "testdata", "HotA_lng.lod"))
+	if err != nil {
+		t.Fatalf("Can't load lod archive meta: %s", err.Error())
+	}
+	wholeTestingArchiveDir := filepath.Join(tempDirPath, "whole_archive")
+	err = lodparse.ExtractLodFiles(lam, wholeTestingArchiveDir)
+	if err != nil {
+		t.Fatalf("Can't extract lod archive: %s", err.Error())
+	}
+
+	testingFiles, err := ioutil.ReadDir(wholeTestingArchiveDir)
+	if err != nil {
+		t.Fatal("Can't read extracted for test archive dir")
+	}
+	trustedFiles, err := ioutil.ReadDir(filepath.Join("./", "testdata", "HotA_lng_files"))
+	if err != nil {
+		t.Fatal("Can't read dir with trusted extracted files")
+	}
+
+	if len(testingFiles) != len(trustedFiles) {
+		t.Fatal("different files amount in trusted and tested files dirs")
+	}
+
+	for i, file := range trustedFiles {
+		if file.Name() != testingFiles[i].Name() {
+			t.Fatalf("Files names missmatch: trusted(%s) vs tested(%s)", file.Name(), testingFiles[i].Name())
+		}
+		if file.Size() != trustedFiles[i].Size() {
+			t.Fatalf("Files names missmatch: trusted(%s:%d) vs tested(%s:%d)", file.Name(), file.Size(), testingFiles[i].Name(), testingFiles[i].Size())
+		}
 	}
 }
