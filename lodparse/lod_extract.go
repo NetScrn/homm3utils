@@ -59,7 +59,7 @@ func ExtractLodFiles(lodArchive *LodArchiveMeta, dstDir string, concurrencyLevel
 }
 
 func ExtractFile(file LodFileMeta, lodFileReader *os.File, dstDir string) error {
-	var fsize int32
+	var fsize uint32
 	if file.IsCompressed() {
 		fsize = file.CompressedSize
 	} else {

@@ -1,6 +1,6 @@
 package lodparse
 
-type LodArchiveType int32
+type LodArchiveType uint32
 const (
 	Base      LodArchiveType = 0x01
 	Expansion LodArchiveType = 0x02

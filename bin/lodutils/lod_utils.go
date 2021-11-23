@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/netscrn/homm3utils/lodutils/lodparse"
+	"github.com/netscrn/homm3utils/lodparse"
 )
 
 func main() {

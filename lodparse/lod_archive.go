@@ -31,8 +31,8 @@ type lodArchiveFileIndex map[string]int
 type LodArchiveMeta struct {
 	ArchiveFilePath string         `json:"file_path"`
 	LodType         LodArchiveType `json:"lod_type"`
-	NumberOfFiles   int32         `json:"number_of_files"`
-	Files           []LodFileMeta `json:"files"`
+	NumberOfFiles   uint32         `json:"number_of_files"`
+	Files           []LodFileMeta  `json:"files"`
 	filesIndexes    lodArchiveFileIndex
 }
 
@@ -86,9 +86,9 @@ func (lam *LodArchiveMeta) WriteJsonFile(jsonDstDir, filename string) error {
 
 type LodFileMeta struct {
 	Name           string `json:"name"`
-	Offset         int32  `json:"offset"`
-	OriginalSize   int32  `json:"original_size"`
-	CompressedSize int32  `json:"compressed_size"`
+	Offset         uint32 `json:"offset"`
+	OriginalSize   uint32 `json:"original_size"`
+	CompressedSize uint32 `json:"compressed_size"`
 }
 
 func (lf LodFileMeta) IsCompressed() bool {

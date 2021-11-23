@@ -1,13 +1,12 @@
 package lodparse_test
 
 import (
+	"github.com/netscrn/homm3utils/lodparse"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
-
-	"github.com/netscrn/homm3utils/lodutils/lodparse"
 )
 
 var tempDirPath string
