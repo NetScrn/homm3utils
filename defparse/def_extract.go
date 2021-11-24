@@ -1,33 +1,33 @@
 package defparse
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/netscrn/homm3utils/internal/binread"
 	"image"
 	"image/color"
-	"image/draw"
 	"image/png"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/netscrn/homm3utils/internal/binread"
 )
 
-type DefBlockMeta struct {
-	Id            uint32
-	DefImagesMeta []DefImageMeta
-}
-type DefImageMeta struct {
-	Name   string
-	Offset uint32
-}
 type OutFilesMeta struct {
-	BlocksMeta []DefBlockMeta
-	DefType    uint32
-	Format     uint32
+	BlocksMeta []DefBlockMeta `json:"blocks_meta"`
+	DefType    uint32         `json:"def_type"`
+	Format     uint32         `json:"format"`
+}
+type DefBlockMeta struct {
+	Id        uint32     `json:"block_id"`
+	DefImages []DefImage `json:"images"`
+}
+type DefImage struct {
+	Name      string    `json:"name"`
+	Offset    uint32    `json:"offset"`
 }
 type ImageMeta struct {
 	Size       uint32
@@ -147,13 +147,13 @@ func readDefBlocksMeta(defFile *os.File, defBlocks uint32) (*[]DefBlockMeta, err
 			return nil, fmt.Errorf("can't skip unknown block meta data: %w", err)
 		}
 
-		defImagesMeta := make([]DefImageMeta, 0, defFilesCount)
+		defImagesMeta := make([]DefImage, 0, defFilesCount)
 		for j := 0; j < int(defFilesCount); j++ {
 			name, err := binread.ReadAvailableChars(defFile, 13)
 			if err != nil {
 				return nil, fmt.Errorf("can't read def file name(%d): %w", j+1, err)
 			}
-			defImagesMeta = append(defImagesMeta, DefImageMeta{
+			defImagesMeta = append(defImagesMeta, DefImage{
 				Name: name,
 			})
 		}
@@ -167,8 +167,8 @@ func readDefBlocksMeta(defFile *os.File, defBlocks uint32) (*[]DefBlockMeta, err
 		}
 
 		blocks = append(blocks, DefBlockMeta{
-			Id: blockId,
-			DefImagesMeta: defImagesMeta,
+			Id:        blockId,
+			DefImages: defImagesMeta,
 		})
 	}
 
@@ -176,9 +176,9 @@ func readDefBlocksMeta(defFile *os.File, defBlocks uint32) (*[]DefBlockMeta, err
 }
 
 func extractBlocksContent(defFile *os.File, blocksMeta *[]DefBlockMeta, palette color.Palette, defOutDir string, defType uint32) error {
-	err := os.Mkdir(defOutDir, 0700)
+	err := resetDefOutDir(defOutDir)
 	if err != nil {
-		return fmt.Errorf("can't create def dir(%s): %w", defOutDir, err)
+		return err
 	}
 
 	ofm := OutFilesMeta{
@@ -195,134 +195,99 @@ func extractBlocksContent(defFile *os.File, blocksMeta *[]DefBlockMeta, palette 
 		}
 
 		var firstFullWidth, firstFullHeight uint32 = 99999, 99999
-		for _, dim := range bm.DefImagesMeta {
-			_, err := defFile.Seek(int64(dim.Offset), io.SeekStart)
+		for _, di := range bm.DefImages {
+			_, err := defFile.Seek(int64(di.Offset), io.SeekStart)
 			if err != nil {
-				return fmt.Errorf("can't seek to image(%s) offset(%d): %w", dim.Name, dim.Offset, err)
+				return fmt.Errorf("can't seek to image(%s) offset(%d): %w", di.Name, di.Offset, err)
 			}
 
-			im, err := readImageMeta(defFile)
+			imgMeta, err := readImageMeta(defFile)
 			if err != nil {
-				return fmt.Errorf("can't read image(%s) meta: %w", dim.Name, err)
+				return fmt.Errorf("can't read image(%s) meta: %w", di.Name, err)
 			}
 
 			// SGTWMTA.def and SGTWMTB.def fail here
-			if im.LeftMargin > int32(im.FullWight) || im.TopMargin > int32(im.FullHeight) {
+			if imgMeta.LeftMargin > int32(imgMeta.FullWight) || imgMeta.TopMargin > int32(imgMeta.FullHeight) {
 				errMsg := fmt.Sprintf(
 					"margins(%dx%d) are higher than dimensions(%dx%d) in %s",
-					im.LeftMargin, im.TopMargin, im.FullWight, im.FullHeight, dim.Name,
+					imgMeta.LeftMargin, imgMeta.TopMargin, imgMeta.FullWight, imgMeta.FullHeight, di.Name,
 				)
 				return errors.New(errMsg)
 			}
 
 			if firstFullWidth == 99999 && firstFullHeight == 99999 {
-				firstFullWidth  = im.FullWight
-				firstFullHeight = im.FullHeight
+				firstFullWidth  = imgMeta.FullWight
+				firstFullHeight = imgMeta.FullHeight
 			} else {
-				if firstFullWidth > im.FullWight {
-					im.FullWight = firstFullWidth   // enlarge image width
+				if firstFullWidth > imgMeta.FullWight {
+					imgMeta.FullWight = firstFullWidth // enlarge image width
 				}
-				if firstFullHeight > im.FullHeight {
-					im.FullHeight = firstFullHeight // enlarge image height
+				if firstFullHeight > imgMeta.FullHeight {
+					imgMeta.FullHeight = firstFullHeight // enlarge image height
 				}
-				if im.FullWight > firstFullWidth {
-					return errors.New(fmt.Sprintf("%s width is greater than in first image", dim.Name))
+				if imgMeta.FullWight > firstFullWidth {
+					return errors.New(fmt.Sprintf("%s width is greater than in first image", di.Name))
 				}
-				if im.FullHeight > firstFullHeight {
-					return errors.New(fmt.Sprintf("%s height is greater than in first image", dim.Name))
+				if imgMeta.FullHeight > firstFullHeight {
+					return errors.New(fmt.Sprintf("%s height is greater than in first image", di.Name))
 				}
 			}
 
 			if ofm.Format == 99999 {
-				ofm.Format = im.Format
-			} else if ofm.Format != im.Format {
-				return errors.New(fmt.Sprintf("%s got different format than first image", dim.Name))
+				ofm.Format = imgMeta.Format
+			} else if ofm.Format != imgMeta.Format {
+				return errors.New(fmt.Sprintf("%s got different format than first image", di.Name))
 			}
 
-			if im.Width != 0 && im.Height != 0 {
-				if im.Format == 0 {
-					pixels := make([]uint8, im.Width*im.Height)
+			var imgRGBA *image.RGBA
+			if imgMeta.Width != 0 && imgMeta.Height != 0 {
+				if imgMeta.Format == 0 {
+					fmt.Printf("FIRED 0 - %s", di.Name)
+					pixels := make([]uint8, imgMeta.Width*imgMeta.Height)
 					_, err := defFile.Read(pixels)
 					if err != nil {
-						return errors.New(fmt.Sprintf("can't read image(%s) pixels", dim.Name))
+						return errors.New(fmt.Sprintf("can't read format0 pixels image(%s)", di.Name))
 					}
-
-					img := image.NewPaletted(image.Rect(0, 0, int(im.Width), int(im.Height)), palette)
-					img.Pix = pixels
-				} else if im.Format == 1 {
-					var pixels []uint8
-
-					lineoffs := make([]uint32, im.Height)
-					for i := 0; i < int(im.Height); i++ {
-						err = binread.ReadUint32(defFile, &lineoffs[i])
-						if err != nil {
-							return errors.New(fmt.Sprintf("can't read image(%s) lineoffset number(%d)", dim.Name, i))
-						}
-					}
-
-					for _, lineoff := range lineoffs {
-						_, err = defFile.Seek(int64(dim.Offset)+32+int64(lineoff), io.SeekStart)
-						if err != nil {
-							return errors.New(fmt.Sprintf("can't seek image(%s) lineoffset(%d)", dim.Name, lineoff))
-						}
-
-						var totalRowLength uint32
-						for ;totalRowLength < im.Width; {
-
-							var code uint8
-							err = binread.ReadUint8(defFile, &code)
-							if err != nil {
-								return fmt.Errorf("cant read row code: %w", err)
-							}
-
-							var length uint8
-							err = binread.ReadUint8(defFile, &length)
-							if err != nil {
-								return fmt.Errorf("cant read row length: %w", err)
-							}
-
-							length++
-
-							if code == 0xff {
-								for i := 0; i < int(length); i++ {
-									var b uint8
-									err = binread.ReadUint8(defFile, &b)
-									if err != nil {
-										return fmt.Errorf("cant read row code: %w", err)
-									}
-									pixels = append(pixels, b)
-								}
-							} else {
-								for i := 0; i < int(length); i++ {
-									pixels = append(pixels, code)
-								}
-							}
-							totalRowLength += uint32(length)
-						}
-					}
-
-					img := image.NewPaletted(image.Rect(0, 0, int(im.Width), int(im.Height)), palette)
-					img.Pix = pixels
-
-
-					imgrgba := image.NewRGBA(img.Rect)
-					draw.Draw(imgrgba, imgrgba.Rect, img, imgrgba.Rect.Min, draw.Src)
-
-					imageDstPath := filepath.Join(defBlockOutDir, filepath.Base(strings.TrimSuffix(dim.Name, filepath.Ext(dim.Name))) + ".png")
-					file, err := os.Create(imageDstPath)
+					imgRGBA = decodePixels(&pixels, palette, imgMeta)
+				} else if imgMeta.Format == 1 {
+					pixels, err := readFormat1Pixels(defFile, di, imgMeta)
 					if err != nil {
-						return fmt.Errorf("can't create png file(%s): %w", imageDstPath, err)
+						return fmt.Errorf("cant read format1 pixels: %w", err)
 					}
-					defer file.Close()
-
-					png.Encode(file, imgrgba)
-				} else if im.Format == 2 {
-					log.Println("FIRED 2")
-				} else if im.Format == 3 {
-					log.Println("FIRED 3")
+					imgRGBA = decodePixels(pixels, palette, imgMeta)
+				} else if imgMeta.Format == 2 {
+					panic(fmt.Sprintf("FIRED 2 - %s", di.Name))
+				} else if imgMeta.Format == 3 {
+					panic(fmt.Sprintf("FIRED 3 - %s", di.Name))
 				}
+			} else {
+				imgRGBA = image.NewRGBA(image.Rect(0, 0, 0, 0))
+			}
+
+			srcImgName := filepath.Base(strings.TrimSuffix(di.Name, filepath.Ext(di.Name)))
+			imageDstPath := filepath.Join(defBlockOutDir, srcImgName + ".png")
+			file, err := os.Create(imageDstPath)
+			if err != nil {
+				return fmt.Errorf("can't create png file(%s): %w", imageDstPath, err)
+			}
+			defer file.Close()
+
+			err = png.Encode(file, imgRGBA)
+			if err != nil {
+				return fmt.Errorf("can't encode png(%s): %w", imageDstPath, err)
 			}
 		}
+	}
+
+	ofmFile, err := os.Create(filepath.Join(defOutDir, "meta.json"))
+	if err != nil {
+		fmt.Println(fmt.Sprint("can't create mata.json: %w", err))
+	}
+	jsonEncoder := json.NewEncoder(ofmFile)
+	jsonEncoder.SetIndent("", "    ")
+	err = jsonEncoder.Encode(ofm)
+	if err != nil {
+		fmt.Println(fmt.Sprint("can't write to mata.json: %w", err))
 	}
 	return  nil
 }
@@ -364,4 +329,22 @@ func readImageMeta(defFile *os.File) (*ImageMeta, error) {
 	}
 
 	return &imageMeta, nil
+}
+
+func resetDefOutDir(defOutDir string) error {
+	if err := os.Mkdir(defOutDir, 0700); err != nil {
+		if os.IsExist(err) {
+			err := os.RemoveAll(defOutDir)
+			if err != nil {
+				return fmt.Errorf("can't remove def dir: %w", err)
+			}
+			err = os.Mkdir(defOutDir, 0700)
+			if err != nil {
+				return fmt.Errorf("can't create def dir: %w", err)
+			}
+		} else {
+			return fmt.Errorf("can't create def dir: %w", err)
+		}
+	}
+	return nil
 }
