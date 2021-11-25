@@ -15,23 +15,22 @@ var (
 	selectionShadowBorder = color.RGBA{R: 0,   G: 255, B: 0,   A: 255}
 )
 
-func decodePixels(pixels *[]uint8, palette color.Palette, imgMeta *ImageMeta) *image.RGBA {
-	smallImgMax := image.Point{X: int(imgMeta.Width), Y: int(imgMeta.Height)}
-	smallImgRect := image.Rectangle{Min: image.Point{}, Max: smallImgMax}
-	img := image.NewPaletted(smallImgRect, palette)
-	img.Pix = *pixels
+func decodePixels(pixels []uint8, palette color.Palette, imgMeta *ImageMeta) *image.RGBA {
+	originImgMax := image.Point{X: int(imgMeta.Width), Y: int(imgMeta.Height)}
+	originImgRect := image.Rectangle{Min: image.Point{}, Max: originImgMax}
+	img := image.NewPaletted(originImgRect, palette)
+	img.Pix = pixels
 
 	imgRGBA := image.NewRGBA(image.Rect(0, 0, int(imgMeta.FullWight), int(imgMeta.FullHeight)))
 	margin := image.Point{X: int(imgMeta.LeftMargin), Y: int(imgMeta.TopMargin)}
-	innerRect := image.Rectangle{Min: margin, Max: margin.Add(smallImgMax)}
+	innerRect := image.Rectangle{Min: margin, Max: margin.Add(originImgMax)}
 	draw.Draw(imgRGBA, innerRect, img, image.Point{}, draw.Src)
 
-	replaceHomm3SpecialColors(imgRGBA, imgMeta)
-
+	replaceDefSpecialColors(imgRGBA, imgMeta)
 	return imgRGBA
 }
 
-func replaceHomm3SpecialColors(img *image.RGBA, imgMeta *ImageMeta) {
+func replaceDefSpecialColors(img *image.RGBA, imgMeta *ImageMeta) {
 	for x := int(imgMeta.LeftMargin); x < int(imgMeta.LeftMargin) + int(imgMeta.Width); x++ {
 		for y := int(imgMeta.TopMargin); y < int(imgMeta.TopMargin) + int(imgMeta.Height); y++ {
 			if img.At(x, y) == background {

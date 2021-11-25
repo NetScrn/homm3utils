@@ -69,7 +69,6 @@ func ExtractDef(defPath, outDir string) error {
 		return fmt.Errorf("can't extract def blocks content: %w", err)
 	}
 
-	fmt.Println("Done")
 	return nil
 }
 
@@ -241,25 +240,11 @@ func extractBlocksContent(defFile *os.File, blocksMeta *[]DefBlockMeta, palette 
 
 			var imgRGBA *image.RGBA
 			if imgMeta.Width != 0 && imgMeta.Height != 0 {
-				if imgMeta.Format == 0 {
-					fmt.Printf("FIRED 0 - %s", di.Name)
-					pixels := make([]uint8, imgMeta.Width*imgMeta.Height)
-					_, err := defFile.Read(pixels)
-					if err != nil {
-						return errors.New(fmt.Sprintf("can't read format0 pixels image(%s)", di.Name))
-					}
-					imgRGBA = decodePixels(&pixels, palette, imgMeta)
-				} else if imgMeta.Format == 1 {
-					pixels, err := readFormat1Pixels(defFile, di, imgMeta)
-					if err != nil {
-						return fmt.Errorf("cant read format1 pixels: %w", err)
-					}
-					imgRGBA = decodePixels(pixels, palette, imgMeta)
-				} else if imgMeta.Format == 2 {
-					panic(fmt.Sprintf("FIRED 2 - %s", di.Name))
-				} else if imgMeta.Format == 3 {
-					panic(fmt.Sprintf("FIRED 3 - %s", di.Name))
+				pixels, err := readPixels(defFile, di, imgMeta)
+				if err != nil {
+					return fmt.Errorf("cant read pixels of image %s: %w", di.Name, err)
 				}
+				imgRGBA = decodePixels(pixels, palette, imgMeta)
 			} else {
 				imgRGBA = image.NewRGBA(image.Rect(0, 0, 0, 0))
 			}
