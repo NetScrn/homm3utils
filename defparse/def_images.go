@@ -7,32 +7,32 @@ import (
 )
 
 var (
-	background            = color.RGBA{R: 0,   G: 255, B: 255, A: 255}
+	background            = color.RGBA{R: 0, G: 255, B: 255, A: 255}
 	shadowBorder          = color.RGBA{R: 255, G: 150, B: 255, A: 255}
-	shadowBody            = color.RGBA{R: 255, G: 0,   B: 255, A: 255}
-	selection             = color.RGBA{R: 255, G: 255, B: 0,   A: 255}
-	selectionShadowBody   = color.RGBA{R: 180, G: 0,   B: 255, A: 255}
-	selectionShadowBorder = color.RGBA{R: 0,   G: 255, B: 0,   A: 255}
+	shadowBody            = color.RGBA{R: 255, G: 0, B: 255, A: 255}
+	selection             = color.RGBA{R: 255, G: 255, B: 0, A: 255}
+	selectionShadowBody   = color.RGBA{R: 180, G: 0, B: 255, A: 255}
+	selectionShadowBorder = color.RGBA{R: 0, G: 255, B: 0, A: 255}
 )
 
 func decodePixels(pixels []uint8, palette color.Palette, imgMeta *ImageMeta) *image.RGBA {
-	originImgMax := image.Point{X: int(imgMeta.Width), Y: int(imgMeta.Height)}
-	originImgRect := image.Rectangle{Min: image.Point{}, Max: originImgMax}
+	originImgMax := image.Pt(int(imgMeta.Width), int(imgMeta.Height))
+	originImgRect := image.Rectangle{Min: image.Pt(0, 0), Max: originImgMax}
 	img := image.NewPaletted(originImgRect, palette)
 	img.Pix = pixels
 
 	imgRGBA := image.NewRGBA(image.Rect(0, 0, int(imgMeta.FullWight), int(imgMeta.FullHeight)))
-	margin := image.Point{X: int(imgMeta.LeftMargin), Y: int(imgMeta.TopMargin)}
+	margin := image.Pt(int(imgMeta.LeftMargin), int(imgMeta.TopMargin))
 	innerRect := image.Rectangle{Min: margin, Max: margin.Add(originImgMax)}
-	draw.Draw(imgRGBA, innerRect, img, image.Point{}, draw.Src)
+	draw.Draw(imgRGBA, innerRect, img, image.Pt(0, 0), draw.Src)
 
 	replaceDefSpecialColors(imgRGBA, imgMeta)
 	return imgRGBA
 }
 
 func replaceDefSpecialColors(img *image.RGBA, imgMeta *ImageMeta) {
-	for x := int(imgMeta.LeftMargin); x < int(imgMeta.LeftMargin) + int(imgMeta.Width); x++ {
-		for y := int(imgMeta.TopMargin); y < int(imgMeta.TopMargin) + int(imgMeta.Height); y++ {
+	for x := int(imgMeta.LeftMargin); x < int(imgMeta.LeftMargin)+int(imgMeta.Width); x++ {
+		for y := int(imgMeta.TopMargin); y < int(imgMeta.TopMargin)+int(imgMeta.Height); y++ {
 			if img.At(x, y) == background {
 				img.Set(x, y, color.RGBA{A: 0})
 			}
@@ -54,4 +54,3 @@ func replaceDefSpecialColors(img *image.RGBA, imgMeta *ImageMeta) {
 		}
 	}
 }
-
